@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Add Application Node</title>
+	</head>
+	<body>
+		<h1>Add Application Node</h1>
+		<form id="myForm" type="POST" onsubmit="submitForm(event)">
+			<input
+				type="text"
+				name="name"
+				id="name"
+				placeholder="name of application node"
+			/>
+			<fieldset>
+				<input
+					type="text"
+					name="permissionNodeIDs"
+					class="permissionNodeIDs"
+					placeholder="Permission node ID"
+				/>
+				<input
+					type="text"
+					name="permissionNodeIDs"
+					class="permissionNodeIDs"
+					placeholder="Permission node ID"
+				/>
+			</fieldset>
+			<button type="submit" id="submit">submit</button>
+		</form>
+
+		<script>
+			function submitForm(event) {
+				event.preventDefault();
+				const form = document.querySelector("#myForm");
+				const headers = {
+					"Content-Type": "application/json",
+				};
+
+				// name field
+				const name = document.getElementById("name").value;
+
+				// permissionNodes filed
+				const permissionNodes = [];
+
+				// permission node fields array
+				const permissionNodeIDs = Array.from(
+					document.getElementsByClassName("permissionNodeIDs")
+				);
+
+				permissionNodeIDs.forEach((permissionNodeID) => {
+					permissionNodes.push(permissionNodeID.value);
+				});
+
+				const body = { name: name, permissionNodes: permissionNodes };
+				console.log(body);
+
+				const requestOptions = {
+					method: "POST",
+					headers: headers,
+					body: JSON.stringify(body),
+					redirect: "follow",
+				};
+
+				fetch("/permission/addApplicationNode", requestOptions)
+					.then((response) => response.json())
+					.then((result) => {
+						console.log("done!");
+						console.log(result);
+					})
+					.catch((error) => console.log("error", error));
+			}
+		</script>
+	</body>
+</html>

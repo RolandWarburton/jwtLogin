@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Add Permission Node</title>
+	</head>
+	<body>
+		<h1>Add Permission Node</h1>
+		<form id="myForm" type="POST" onsubmit="submitForm(event)">
+			<input
+				type="text"
+				name="name"
+				id="name"
+				placeholder="name of permission node"
+			/>
+			<button type="submit" id="submit">submit</button>
+		</form>
+
+		<script>
+			function submitForm(event) {
+				event.preventDefault();
+				const form = document.querySelector("#myForm");
+				const headers = {
+					"Content-Type": "application/json",
+				};
+
+				const name = document.getElementById("name").value;
+
+				const urlencoded = new URLSearchParams();
+				urlencoded.append("name", name.value);
+
+				const requestOptions = {
+					method: "POST",
+					headers: headers,
+					body: JSON.stringify({ name: name }),
+					redirect: "follow",
+				};
+
+				fetch("/permission/addPermissionNode", requestOptions)
+					.then((response) => response.json())
+					.then((result) => {
+						console.log("done!");
+						console.log(result);
+					})
+					.catch((error) => console.log("error", error));
+			}
+		</script>
+	</body>
+</html>

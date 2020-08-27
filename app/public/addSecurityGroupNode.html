@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Add Permission Node</title>
+	</head>
+	<body>
+		<h1>Add security group</h1>
+		<fieldset>
+			<form id="myForm" type="POST" onsubmit="submitForm(event)">
+				<h4>Security group name</h4>
+				<input
+					type="text"
+					name="name"
+					id="name"
+					placeholder="name of security group node"
+				/>
+				<fieldset id="applications">
+					<legend>Applications</legend>
+					<p>
+						// dynamic form returns permission nodes for blogwatcher
+					</p>
+					<!-- example group one -->
+					<fieldset id="5f4780be9ceea40d7194473b">
+						<legend>Application</legend>
+						<input
+							type="text"
+							class="appID"
+							placeholder="5f4780be9ceea40d7194473b"
+						/>
+						<br />
+
+						<h5 style="display: inline">read</h5>
+						<input
+							type="checkbox"
+							name="permissionNodeIDs"
+							class="permissionNodeIDs"
+							id="write"
+							data-permission-node="5f473ece15e5c012d6f89f0f"
+						/>
+
+						<br />
+						<h5 style="display: inline">write</h5>
+						<label for="read"></label>
+						<input
+							type="checkbox"
+							name="permissionNodeIDs"
+							class="permissionNodeIDs"
+							id="read"
+							data-permission-node="5f473ecb15e5c012d6f89f0e"
+						/>
+					</fieldset>
+				</fieldset>
+				<button type="submit" id="submit">submit</button>
+			</form>
+		</fieldset>
+
+		<script>
+			function submitForm(event) {
+				event.preventDefault();
+				const form = document.querySelector("#myForm");
+				const headers = {
+					"Content-Type": "application/json",
+				};
+
+				// store the applications
+				const applications = [];
+
+				// store the permissions from each application in the form
+				const appPermissions = [];
+
+				// body for the final submission
+				const body = {};
+
+				// name field
+				const name = document.getElementById("name").value;
+
+				// permission node fields array
+				const applicationElements = document.getElementById(
+					"applications"
+				).elements;
+
+				// get all the applications
+				for (element of applicationElements) {
+					if (element.nodeName == "FIELDSET") {
+						applications.push(element);
+					}
+				}
+
+				for (application of applications) {
+					// track the permissions for this application fieldset
+					const permissions = [];
+
+					// for each element in this application fieldset
+					for (element of application.children) {
+						// if we are on a checkbox field
+						if (element.type == "checkbox") {
+							// get the permission node ID
+							const permissionNodeID = element.getAttribute(
+								"data-permission-node"
+							);
+							// add this to the array of permissions for this application
+							permissions.push({
+								permissionValue: element.checked,
+								permissionNode: permissionNodeID,
+							});
+						}
+					}
+
+					// we have now iterated over all the children of this application
+					// so push it to the appPermissions array which will be attached to the body
+					appPermissions.push({
+						[application.id]: permissions,
+					});
+				}
+
+				// set the name of the body
+				body.name = name;
+				// attach the app permissions array
+				body.applications = appPermissions;
+
+				const requestOptions = {
+					method: "POST",
+					headers: headers,
+					body: JSON.stringify(body),
+					redirect: "follow",
+				};
+
+				fetch("/permission/addSecurityGroupNode", requestOptions)
+					.then((response) => response.json())
+					.then((result) => {
+						console.log("done!");
+						// console.log(result);
+					})
+					.catch((error) => console.log("error", error));
+			}
+		</script>
+	</body>
+</html>
