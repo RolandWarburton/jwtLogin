@@ -23,6 +23,14 @@
 					id="password"
 					placeholder="password"
 				/>
+				<br />
+				<label for="read">Superuser</label>
+				<input
+					type="checkbox"
+					name="superUser"
+					class="superUser"
+					id="superUser"
+				/>
 				<fieldset id="applications">
 					<legend>Applications</legend>
 					<p>
@@ -94,8 +102,9 @@
 				const body = {};
 
 				// name field
-				const name = document.getElementById("name").value;
+				const username = document.getElementById("name").value;
 				const password = document.getElementById("password").value;
+				const superuser = document.getElementById("superUser").checked;
 
 				// permission node fields array
 				const applicationElements = document.getElementById(
@@ -138,7 +147,7 @@
 				}
 
 				// set the name of the body
-				body.name = name;
+				body.username = username;
 				// attach the app permissions array
 				body.applications = appPermissions;
 
@@ -163,8 +172,10 @@
 
 				body.securityGroups = securityGroups;
 				body.password = password;
+				body.superuser = superuser;
 
-				console.log(body);
+				// ? for debugging
+				// console.log(body);
 
 				const requestOptions = {
 					method: "POST",

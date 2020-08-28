@@ -1,10 +1,16 @@
 // const { User } = require("../models/user");
 const connectToDB = require("../database/database");
-const findUser = require("./findUser");
+const searchUser = require("./searchUser");
 const debug = require("debug")("jwtLogin:query");
 require("dotenv").config();
 
-const addUser = async (username, password, applications, securityGroups) => {
+const addUser = async (
+	username,
+	password,
+	superUser,
+	applications,
+	securityGroups
+) => {
 	debug("Running queryUser from db queries...");
 	// connect
 	const client = await connectToDB();
@@ -18,6 +24,7 @@ const addUser = async (username, password, applications, securityGroups) => {
 	const user = {
 		username: username,
 		password: password,
+		superUser: superUser,
 		applications: applications,
 		securityGroups: securityGroups,
 	};
@@ -27,7 +34,7 @@ const addUser = async (username, password, applications, securityGroups) => {
 
 	// try and find a user
 	try {
-		if (await findUser("username", username)) {
+		if (await searchUser("username", username)) {
 			debug("user already exists");
 			return undefined;
 		}

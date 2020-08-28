@@ -1,11 +1,14 @@
-const mongoose = require("mongoose");
-const applicationSchema = require("./application");
 const yup = require("yup");
+const _id = require("./mongoIdString");
+// const applicationSchema = require("./application");
 
 let securityGroupSchema = yup.object().shape({
-	id: yup.string().required(),
+	_id: _id,
 	name: yup.string().required(),
-	applications: yup.array().of(applicationSchema),
+	applications: yup.array().required({
+		permissionValue: yup.bool().required(),
+		permissionNode: yup.string().required(),
+	}),
 });
 
 module.exports = securityGroupSchema;

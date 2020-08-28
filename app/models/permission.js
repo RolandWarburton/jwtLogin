@@ -1,7 +1,8 @@
 const yup = require("yup");
+const _id = require("./mongoIdString");
 
 let permissionSchema = yup.object().shape({
-	id: yup.string().required(),
+	_id: _id,
 	name: yup.string().required(),
 });
 

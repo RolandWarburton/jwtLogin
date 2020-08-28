@@ -1,4 +1,4 @@
-const findUser = require("../../queries/findUser");
+const findUser = require("../../queries/searchUser");
 const jwt = require("jsonwebtoken");
 // TODO redo validation in yup
 // const { validateUser } = require("../../validation/validateUser");

@@ -6,10 +6,11 @@ const createUser = async (req, res) => {
 	debug("Creating a new user...");
 
 	// get the new users details
-	const username = await req.body.username;
-	const password = await req.body.password;
+	const username = req.body.username;
+	const password = req.body.password;
 	const applications = req.body.applications;
 	const securityGroups = req.body.securityGroups;
+	const superUser = req.body.superuser;
 
 	// ? debug bits
 	// debug(JSON.stringify(req.body, null, 2));
@@ -17,6 +18,7 @@ const createUser = async (req, res) => {
 	const result = addUserQuery(
 		username,
 		password,
+		superUser,
 		applications,
 		securityGroups
 	);

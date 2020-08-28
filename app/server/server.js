@@ -12,7 +12,14 @@ const userRoutes = require("../routes/userRoutes");
 const permissionNodeRoutes = require("../routes/permissionNodeRoutes");
 
 // testing stuff
-const findUser = require("../queries/findUser");
+const searchUser = require("../queries/searchUser");
+const searchPermissions = require("../queries/permissions/searchPermissions");
+const ObjectID = require("mongodb").ObjectID;
+const userSchema = require("../models/user");
+const securityGroupSchema = require("../models/securityGroup");
+const applicationSchema = require("../models/application");
+const permissionSchema = require("../models/permission");
+// const permissionSchema = require("../models/permission");
 const addUser = require("../queries/addUser");
 
 debug("============================================");
@@ -55,19 +62,9 @@ app.use("/permission", permissionNodeRoutes);
 
 // quick and dirty upload form
 app.use("/", express.static(path.resolve(process.env.ROOT, "public")));
-// app.get("/", a, (req, res) => {
-// 	res.sendFile(path.resolve(process.env.ROOT, "public/index.html"));
-// });
 
 // starts the server when called
 const server = async () => {
-	// connect to mongodb database
-	// const client = await connectToDB();
-
-	// debug(findUser("username", "roland"));
-	// debug(addUser("joe", "blow"));
-
-	debug("listening...");
 	// start the server
 	app.listen(process.env.PORT, () =>
 		debug(
@@ -85,3 +82,47 @@ const server = async () => {
 };
 
 module.exports = server();
+
+// // ! tests for validating a user
+// try {
+// 	const _id = "5f489e6d01eeff2542c7025a";
+// 	const query = { _id: new ObjectID(_id) };
+// 	const user = await searchPermissions("users", query);
+// 	const val = await userSchema.validate(user);
+// 	debug("validated user successfully! ✅");
+// } catch (err) {
+// 	debug(err);
+// }
+
+// // ! tests for validating a sec group
+// try {
+// 	const _id = "5f47b2191688c919d29f0bbd";
+// 	const query = { _id: new ObjectID(_id) };
+// 	const secGroup = await searchPermissions("securityGroupNodes", query);
+// 	const val = await securityGroupSchema.validate(secGroup);
+// 	debug("validated sec group successfully! ✅");
+// } catch (err) {
+// 	debug(err);
+// }
+
+// // ! tests for validating an application
+// try {
+// 	const _id = "5f4780be9ceea40d7194473b";
+// 	const query = { _id: new ObjectID(_id) };
+// 	const application = await searchPermissions("applicationNodes", query);
+// 	const val = await applicationSchema.validate(application);
+// 	debug("validated application successfully! ✅");
+// } catch (err) {
+// 	debug(err);
+// }
+
+// // ! tests for validating a permission
+// try {
+// 	const _id = "5f473ecb15e5c012d6f89f0e";
+// 	const query = { _id: new ObjectID(_id) };
+// 	const permission = await searchPermissions("permissionNodes", query);
+// 	const val = await permissionSchema.validate(permission);
+// 	debug("validated permission successfully! ✅");
+// } catch (err) {
+// 	debug(err);
+// }
