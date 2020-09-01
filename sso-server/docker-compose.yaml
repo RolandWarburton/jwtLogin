@@ -14,11 +14,11 @@ services:
     #         - ./app:/usr/src/app
 
     mongo:
-        container_name: node-oauth2-server-mongo-example
+        container_name: sso_database
         image: mongo
         environment:
             # back up admin user in case something goes wrong
-            - MONGO_INITDB_DATABASE=oauth2
+            - MONGO_INITDB_DATABASE=jwtLogin
             - MONGO_INITDB_ROOT_USERNAME=admin
             - MONGO_INITDB_ROOT_PASSWORD=rhinos
         volumes:
