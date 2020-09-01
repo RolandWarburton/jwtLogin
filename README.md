@@ -1,4 +1,4 @@
-# JWT Login system
+# JWT Single Sign-on System
 
 Playing around with JWT and Oauth2. bootstrapped with [ankur-anand/simple-sso](https://github.com/ankur-anand/simple-sso).
 
