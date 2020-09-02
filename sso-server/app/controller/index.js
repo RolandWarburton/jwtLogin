@@ -58,21 +58,22 @@ const appTokenFromRequest = fromAuthHeaderAsBearerToken();
 // app token to validate the request is coming from the authenticated server only.
 const appTokenDB = {
 	testApp: "l1Q7zkOL59cRqWBkQ12ZiGVW2DBL",
-	simple_sso_consumer: "1g0jJwGmRQhJwvwNOrY4i90kD0m",
+	blogWatcher: "j3dlr8jdpke2sh3rlrixzcd3svxo",
+	blogBuilder: "3imim8awgeq99ikbmg14lnqe0fu8",
 };
 
 const alloweOrigin = {
-	"http://consumer.ankuranand.in:3020": true,
 	"http://devel:3020": true,
-	"http://consumertwo.ankuranand.in:3030": true,
-	"http://sso.ankuranand.in:3080": false,
+	"https://build.rolandw.dev": true,
+	"https://watch.rolandw.dev": true,
 };
 
 const deHyphenatedUUID = () => uuidv4().replace(/-/gi, "");
 const encodedId = () => hashids.encodeHex(deHyphenatedUUID());
 
 const originAppName = {
-	"http://consumertwo.ankuranand.in:3030": "simple_sso_consumer",
+	"https://build.rolandw.dev": "blogBuilder",
+	"https://watch.rolandw.dev": "blogWatcher",
 	"http://devel:3020": "testApp",
 };
 
@@ -147,35 +148,46 @@ const verifySsoToken = async (req, res, next) => {
 	const appToken = appTokenFromRequest(req);
 	const { ssoToken } = req.query;
 	const cachedToken = await getTokenCache(ssoToken);
-	// if the application token is not present or ssoToken request is invalid
-	// if the ssoToken is not present in the cache some is
-	// smart.
+
+	// ? if the app token cant be extracted from the request
+	// ? if the sso token doesnt exist
+	// ? if the cached token cant be found
 	if (appToken == null || ssoToken == null || !cachedToken) {
 		return res.status(400).json({ message: "badRequest" });
 	}
 
+	// fetch the token
 	const tokenCache = await getTokenCache(ssoToken);
+	// fetch the session and then use it to get the client
 	const session = await getSession(tokenCache.applicationID);
-	// ! fetch the client using its secret
+	// fetch the client using the appToken received from the request,
+	// client will return if it authenticates with the correct bearer ID / client secret
 	const client = await getClient(appToken);
 
-	// if the appToken is present and check if it's valid for the application
+	// get the name of the application to cross ref it against the session (the client the session is referencing)
 	const appName = tokenCache.applicationName;
 
-	// ! if the apps token (supplied client secret) !=  the secret of the client from the database
+	// ! if the app token (presented by the client bearer) != the secret of the client from the database
+	// ! OR the session does not contain the particular client that this session is authenticating
 	// ! then return unauthorized
 	if (appToken !== client.secret || session.client[appName] !== true) {
 		return res.status(403).json({ message: "Unauthorized" });
 	}
 
-	// checking if the token passed has been generated
+	// generate a payload
 	const payload = await generatePayload(ssoToken);
 
+	// encode the payload in a JWT to send back to the client
 	const token = await genJwtToken(payload);
-	// delete the itremCache key, no futher use for it,
-	debug(`will delete tokenCache tokenID:${ssoToken}`);
+
+	// ? The purpose of the tokenCache is to track the communication between the client and auth server
+	// ? A new cache token is created when the client is requesting user information (authenticating)
+	// ?and is then no longer needed after it has authenticated and the JWT payload has been sent to the client
+	// delete the cached token, no futher use for it,
+
 	TokenCache.deleteOne({ tokenID: ssoToken }, (err) => {
 		if (err) debug(err);
+		else debug(`deleted tokenCache tokenID:${ssoToken}`);
 	});
 	return res.status(200).json({ token });
 };
