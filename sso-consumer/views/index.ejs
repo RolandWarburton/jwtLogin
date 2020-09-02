@@ -1,6 +1,9 @@
 <% layout('boilerplate') -%>
 <h1>I am the <%= what %></h1>
 
+<h2>Expires in: <%=expires%></h2>
+
+<h2>User information</h2>
 <ul>
 	<li>role: <%= role %></li>
 	<li>email: <%= email %></li>
@@ -10,3 +13,14 @@
 	<li>exp: <%= exp %></li>
 	<li>iss: <%= iss %></li>
 </ul>
+
+<h2>Cookie</h2>
+<span><%=cookie%></span>
+<!-- <ul>
+	<li>originalMaxAge: <%=cookie.originalMaxAge%></li>
+	<li>expires: <%=cookie.expires%></li>
+	<li>httpOnly: <%=cookie.httpOnly%></li>
+	<li>path: <%=cookie.path%></li>
+</ul> -->
+
+<a href="/logout">logout</a>

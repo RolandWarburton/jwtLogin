@@ -76,9 +76,6 @@ const originAppName = {
 	"http://devel:3020": "testApp",
 };
 
-// these token are for the validation purpose
-const intrmTokenCache = {};
-
 const fillIntrmTokenCache = (origin, id, intrmToken) => {
 	const tokenCache = new TokenCache();
 	tokenCache.tokenID = intrmToken;
@@ -86,7 +83,6 @@ const fillIntrmTokenCache = (origin, id, intrmToken) => {
 	tokenCache.applicationName = originAppName[origin];
 	tokenCache.save();
 	debug4(`cached token ${tokenCache.tokenID}`);
-	intrmTokenCache[intrmToken] = [id, originAppName[origin]];
 };
 
 const storeApplicationInCache = async (origin, id, intrmToken, email) => {
@@ -150,14 +146,11 @@ const generatePayload = async (ssoToken) => {
 const verifySsoToken = async (req, res, next) => {
 	const appToken = appTokenFromRequest(req);
 	const { ssoToken } = req.query;
+	const cachedToken = await getTokenCache(ssoToken);
 	// if the application token is not present or ssoToken request is invalid
 	// if the ssoToken is not present in the cache some is
 	// smart.
-	if (
-		appToken == null ||
-		ssoToken == null ||
-		intrmTokenCache[ssoToken] == null
-	) {
+	if (appToken == null || ssoToken == null || !cachedToken) {
 		return res.status(400).json({ message: "badRequest" });
 	}
 
@@ -179,9 +172,11 @@ const verifySsoToken = async (req, res, next) => {
 	const payload = await generatePayload(ssoToken);
 
 	const token = await genJwtToken(payload);
-	// delete the itremCache key for no futher use,
-	TokenCache.deleteOne({ tokenID: ssoToken });
-	delete intrmTokenCache[ssoToken];
+	// delete the itremCache key, no futher use for it,
+	debug(`will delete tokenCache tokenID:${ssoToken}`);
+	TokenCache.deleteOne({ tokenID: ssoToken }, (err) => {
+		if (err) debug(err);
+	});
 	return res.status(200).json({ token });
 };
 

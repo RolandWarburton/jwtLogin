@@ -3,6 +3,7 @@ const morgan = require("morgan");
 const app = express();
 const engine = require("ejs-mate");
 const session = require("express-session");
+const debug = require("debug")("app:server");
 
 const isAuthenticated = require("./isAuthenticated");
 const checkSSORedirect = require("./checkSSORedirect");
@@ -12,6 +13,9 @@ app.use(
 		secret: "keyboard cat",
 		resave: false,
 		saveUninitialized: true,
+		cookie: {
+			maxAge: 100000,
+		},
 	})
 );
 
@@ -25,7 +29,8 @@ app.set("view engine", "ejs");
 app.use(checkSSORedirect());
 
 app.get("/", isAuthenticated, (req, res, next) => {
-	// console.log(req.session.user);
+	const now = new Date().toISOString();
+	debug(`This session is: ${req.session.id}`);
 	res.render("index", {
 		what: `SSO-Consumer One`,
 		role: req.session.user.role,
@@ -36,7 +41,14 @@ app.get("/", isAuthenticated, (req, res, next) => {
 		exp: req.session.user.exp,
 		iss: req.session.user.iss,
 		title: "SSO-Consumer | Home",
+		cookie: JSON.stringify(req.session.cookie) || "not sure",
+		expires: req.session.cookie.maxAge / 1000 + "'s",
 	});
+});
+
+app.get("/logout", isAuthenticated, (req, res, next) => {
+	req.session.destroy();
+	res.status(200).send("logged out");
 });
 
 app.use((req, res, next) => {
@@ -46,11 +58,8 @@ app.use((req, res, next) => {
 	next(err);
 });
 
+// catch errors
 app.use((err, req, res, next) => {
-	// console.error({
-	// 	message: err.message,
-	// 	error: err,
-	// });
 	const statusCode = err.status || 500;
 	let message = err.message || "Internal Server Error";
 

@@ -1,23 +1,24 @@
 const url = require("url");
 const axios = require("axios");
 const debug = require("debug")("app:checkSSORedirect");
-const { URL } = url;
 const { verifyJwtToken } = require("./jwt_verify");
-const validReferOrigin = "http://devel:3010";
 const ssoServerJWTURL = "http://devel:3010/simplesso/verifytoken";
+
+// TODO Do some validation that the origin of the request came from the SSO server
+const validReferOrigin = "http://devel:3010";
 
 const ssoRedirect = () => {
 	return async function (req, res, next) {
-		debug("============================================");
 		debug("running checkSSORedirect");
-		// check if the req has the queryParameter as ssoToken
-		// and who is the referer.
+
+		// ! the sso token is passed to the client when the client is authenticating with the sso server.
+		// ! This client then sends a response back to the "ssoServerJWTURL" to validate its receipt of the token using its Client secret (Bearer secret)
 		const { ssoToken } = req.query;
 		debug(`ssoToken: "${ssoToken}"`);
 
 		if (ssoToken != null) {
 			debug(`the token exists!`);
-			// to remove the ssoToken in query parameter redirect.
+			// get the ssoToken in query parameter redirect.
 			const redirectURL = url.parse(req.url).pathname;
 			try {
 				debug(`requesting the decoded token for "${ssoToken}"`);
@@ -31,18 +32,11 @@ const ssoRedirect = () => {
 					}
 				);
 				const { token } = response.data;
-				debug(`received the token as: "${token}"`);
 				const decoded = await verifyJwtToken(token);
-				debug(`decoded it as: "${decoded}"`);
-				// now that we have the decoded jwt, use the,
-				// global-session-id as the session id so that
-				// the logout can be implemented with the global session.
-				debug(
-					`set "${decoded}" (global session ID) as the user for this session`
-				);
+				debug(`received the token"`);
 				req.session.user = decoded;
 			} catch (err) {
-				debug("ERRRRRRROR");
+				debug("ERRRRRRROR D:");
 				return next(err);
 			}
 
