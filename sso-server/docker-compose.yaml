@@ -34,8 +34,8 @@ services:
             - 27018
             - 27017
         command: mongod --auth --quiet
-        #logging:
-        #driver: none
+        logging:
+            driver: none
 networks:
     default:
         external:

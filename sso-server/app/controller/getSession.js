@@ -8,7 +8,7 @@ const debug = require("debug")("app:findSession");
  * @param {String} id - ID of the session you want to find
  */
 module.exports = (id) => {
-	// debug(`looking for a session of ${id}`);
+	debug(`looking for a session of ${id}`);
 	return Session.findOne({ sessionID: id }, (err, session) => {
 		if (err) {
 			debug(`An error occurred when looking for a session`);
@@ -20,7 +20,7 @@ module.exports = (id) => {
 			return undefined;
 		}
 
-		// debug(`Found ${session.sessionID}`);
+		debug(`Found ${session.sessionID}`);
 		return session;
 	});
 };

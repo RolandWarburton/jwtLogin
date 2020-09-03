@@ -12,15 +12,15 @@ module.exports = (tokenID) => {
 	return TokenCache.findOne({ tokenID: tokenID }, (err, token) => {
 		if (err) {
 			debug(`An error occurred when looking for a token`);
-			return undefined;
+			return null;
 		}
 
 		if (!token) {
 			debug(`didnt find a token with tokenID ${tokenID}`);
-			return undefined;
+			return null;
 		}
 
-		// debug(`Found ${token.tokenID}`);
+		debug(`Found ${token.tokenID}`);
 		return token;
 	});
 };

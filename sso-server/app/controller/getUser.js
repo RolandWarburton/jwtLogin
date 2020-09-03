@@ -21,7 +21,7 @@ module.exports = (query) => {
 			return undefined;
 		}
 
-		debug(`Found user ${user.username}`);
+		// debug(`Found user ${user.username}`);
 		return user;
 	});
 };

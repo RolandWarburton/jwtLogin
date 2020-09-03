@@ -6,6 +6,7 @@ const debug = require("debug")("app:login");
 const debug2 = require("debug")("app:dologin");
 const debug3 = require("debug")("app:storeApplicationInCache");
 const debug4 = require("debug")("app:fillIntrmTokenICache");
+const debug5 = require("debug")("verifySSO");
 const { genJwtToken } = require("./jwt_helper");
 const getSession = require("./getSession");
 const getUser = require("./getUser");
@@ -87,7 +88,6 @@ const fillIntrmTokenCache = (origin, id, intrmToken) => {
 };
 
 const storeApplicationInCache = async (origin, id, intrmToken, email) => {
-	// debug3("============================================");
 	debug3("inspecting the session interim id in the cache");
 
 	const newSession = new Session();
@@ -109,8 +109,22 @@ const storeApplicationInCache = async (origin, id, intrmToken, email) => {
 		debug3(`now we need to add an interim token to the cache...`);
 		fillIntrmTokenCache(origin, id, intrmToken);
 	} else {
-		session.originAppName[origin] = true;
-		session.save();
+		debug("there was an existing session");
+		try {
+			Session.updateOne(
+				{ sessionID: session.sessionID },
+				{ $set: { client: { [originAppName[origin]]: true } } },
+				(err) => {
+					if (err) debug(err);
+					else
+						debug(
+							`updated sessions client for client ${origin} to true`
+						);
+				}
+			);
+		} catch (err) {
+			debug(err);
+		}
 		debug3(`now we need to add an interim token to the cache...`);
 		fillIntrmTokenCache(origin, id, intrmToken);
 	}
@@ -128,7 +142,10 @@ const generatePayload = async (ssoToken) => {
 	const userEmail = dbUser.email;
 	const user = dbUser;
 	const appPolicy = user.appPolicy[appName];
-	const email = appPolicy.shareEmail === true ? userEmail : undefined;
+
+	// example of controlling the shareEmail permission
+	let email = undefined;
+	if (appPolicy && appPolicy.shareEmail === true) email = userEmail;
 
 	// ship it!
 	const payload = {
@@ -145,27 +162,33 @@ const generatePayload = async (ssoToken) => {
 };
 
 const verifySsoToken = async (req, res, next) => {
+	debug5("verifying sso token");
 	const appToken = appTokenFromRequest(req);
 	const { ssoToken } = req.query;
 	const cachedToken = await getTokenCache(ssoToken);
 
+	debug5(`appToken: ${appToken}`);
+	debug5(`ssoToken: ${ssoToken}`);
+	debug5(`cachedToken: ${cachedToken}`);
+
 	// ? if the app token cant be extracted from the request
 	// ? if the sso token doesnt exist
 	// ? if the cached token cant be found
-	if (appToken == null || ssoToken == null || !cachedToken) {
+	if (appToken == null || ssoToken == null || cachedToken == null) {
+		debug5("old or missing token. returning 400");
 		return res.status(400).json({ message: "badRequest" });
 	}
 
 	// fetch the token
-	const tokenCache = await getTokenCache(ssoToken);
+	// const cachedToken = await getTokenCache(ssoToken);
 	// fetch the session and then use it to get the client
-	const session = await getSession(tokenCache.applicationID);
+	const session = await getSession(cachedToken.applicationID);
 	// fetch the client using the appToken received from the request,
 	// client will return if it authenticates with the correct bearer ID / client secret
 	const client = await getClient(appToken);
 
 	// get the name of the application to cross ref it against the session (the client the session is referencing)
-	const appName = tokenCache.applicationName;
+	const appName = cachedToken.applicationName;
 
 	// ! if the app token (presented by the client bearer) != the secret of the client from the database
 	// ! OR the session does not contain the particular client that this session is authenticating
@@ -185,15 +208,14 @@ const verifySsoToken = async (req, res, next) => {
 	// ?and is then no longer needed after it has authenticated and the JWT payload has been sent to the client
 	// delete the cached token, no futher use for it,
 
-	TokenCache.deleteOne({ tokenID: ssoToken }, (err) => {
-		if (err) debug(err);
-		else debug(`deleted tokenCache tokenID:${ssoToken}`);
-	});
+	// TokenCache.deleteOne({ tokenID: ssoToken }, (err) => {
+	// 	if (err) debug(err);
+	// 	else debug(`deleted tokenCache tokenID:${ssoToken}`);
+	// });
 	return res.status(200).json({ token });
 };
 
 const doLogin = async (req, res, next) => {
-	debug2("============================================");
 	debug2("attempting to log in...");
 	// do the validation with email and password
 	// but the goal is not to do the same in this right now,
@@ -202,23 +224,7 @@ const doLogin = async (req, res, next) => {
 	debug2(`USERNAME: "${email}"\nPASSWORD: ${password}`);
 
 	// get a user from the database
-	const user = await User.findOne(
-		{ email: email, password: password },
-		(err, user) => {
-			if (err) {
-				debug2(`An error occurred when looking for a user`);
-				return undefined;
-			}
-
-			if (!user) {
-				debug2(`didnt find a user ${queryValue}`);
-				return undefined;
-			}
-
-			debug2(`Found user ${user.username}`);
-			return user;
-		}
-	);
+	const user = await getUser({ email: email, password: password });
 
 	if (!user) {
 		debug2(
@@ -249,28 +255,30 @@ const doLogin = async (req, res, next) => {
 };
 
 const login = (req, res, next) => {
-	debug("============================================");
+	// debug("============================================");
 	debug("responding to log in request");
 	// The req.query will have the redirect url where we need to redirect after successful
 	// login and with sso token.
 	// This can also be used to verify the origin from where the request has came in
 	// for the redirection
 	const { serviceURL } = req.query;
-	debug(`the service url for the login is: ${req.query.serviceURL}`);
+	// debug(`the service url for the login is: ${req.query.serviceURL}`);
 	// direct access will give the error inside new URL.
 	if (serviceURL != null) {
 		const url = new URL(serviceURL);
 		if (alloweOrigin[url.origin] !== true) {
 			return res.status(400).json({
 				message: "Your are not allowed to access the sso-server",
+				serviceURL: url.origin,
 			});
 		}
 	}
+
 	if (req.session.user != null && serviceURL == null) {
 		return res.redirect("/");
 	}
 
-	debug(`the user for the global session is: ${req.session.user}`);
+	// debug(`the user for the global session is: ${req.session.user}`);
 	// if global session already has the user directly redirect with the token
 	if (req.session.user != null && serviceURL != null) {
 		debug(
@@ -285,7 +293,7 @@ const login = (req, res, next) => {
 	}
 
 	debug("the user is undefined so rendering the login screen");
-	debug("waiting for user to enter details");
+	// debug("waiting for user to enter details");
 	return res.render("login", {
 		title: "SSO-Server | Login",
 	});
