@@ -23,6 +23,7 @@
 		"express": "^4.16.3",
 		"express-session": "^1.15.6",
 		"hashids": "^1.2.2",
+		"internal-ip": "^6.1.0",
 		"jsonwebtoken": "^8.3.0",
 		"mongoose": "^5.10.2",
 		"morgan": "^1.9.0",
