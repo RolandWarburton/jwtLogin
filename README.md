@@ -6,7 +6,11 @@ I have modified the provided boilerplate to use mongoDB as a database for cachin
 
 TODO:
 
-* Evaluate the need to use the tokenCache
-* Add logout functionality
+* Document stuff
+  * UI for adding clients
+  * Explanation on how to implement new clients
+  * etc...
+* Make implementation easier for clients
+* Build statistics and tracking stuff
 
 Refer to setup.md for further instruction and configuration.
