@@ -43,6 +43,7 @@ app.get("/", isAuthenticated, (req, res, next) => {
 		title: "SSO-Consumer | Home",
 		cookie: JSON.stringify(req.session.cookie) || "not sure",
 		expires: req.session.cookie.maxAge / 1000 + "'s",
+		the_whole_shebang: JSON.stringify(req.session.user),
 	});
 });
 

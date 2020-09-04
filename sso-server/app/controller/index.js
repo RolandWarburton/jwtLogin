@@ -67,6 +67,7 @@ const alloweOrigin = {
 	"http://devel:3020": true,
 	"https://build.rolandw.dev": true,
 	"https://watch.rolandw.dev": true,
+	"https://test.rolandw.dev": true,
 };
 
 const deHyphenatedUUID = () => uuidv4().replace(/-/gi, "");
@@ -75,7 +76,7 @@ const encodedId = () => hashids.encodeHex(deHyphenatedUUID());
 const originAppName = {
 	"https://build.rolandw.dev": "blogBuilder",
 	"https://watch.rolandw.dev": "blogWatcher",
-	"http://devel:3020": "testApp",
+	"https://test.rolandw.dev": "testApp",
 };
 
 const fillIntrmTokenCache = (origin, id, intrmToken) => {
@@ -153,7 +154,7 @@ const generatePayload = async (ssoToken) => {
 		...{
 			email,
 			shareEmail: undefined,
-			uid: user.userId,
+			uid: user.uid,
 			// global SessionID for the logout functionality.
 			globalSessionID: globalSessionToken,
 		},

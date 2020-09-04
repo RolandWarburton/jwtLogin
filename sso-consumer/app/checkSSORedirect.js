@@ -1,12 +1,14 @@
 const url = require("url");
 const axios = require("axios");
 const debug = require("debug")("app:checkSSORedirect");
+// const fetch = require("node-fetch");
 const { verifyJwtToken } = require("./jwt_verify");
-const ssoServerJWTURL = "http://devel:3010/simplesso/verifytoken";
+const ssoServerJWTURL = "https://login.rolandw.dev/simplesso/verifytoken";
 
 // TODO Do some validation that the origin of the request came from the SSO server
-const validReferOrigin = "http://devel:3010";
+const validReferOrigin = "https://login.rolandw.dev";
 
+// ! Single Sign On system
 const ssoRedirect = () => {
 	return async function (req, res, next) {
 		debug("running checkSSORedirect");
@@ -22,18 +24,22 @@ const ssoRedirect = () => {
 			const redirectURL = url.parse(req.url).pathname;
 			try {
 				debug(`requesting the decoded token for "${ssoToken}"`);
-				const response = await axios.get(
-					`${ssoServerJWTURL}?ssoToken=${ssoToken}`,
-					{
-						headers: {
-							Authorization:
-								"Bearer l1Q7zkOL59cRqWBkQ12ZiGVW2DBL",
-						},
-					}
-				);
+
+				const headers = {
+					Authorization: "Bearer j3dlr8jdpke2sh3rlrixzcd3svxo",
+				};
+
+				// TODO move to using node-fetch instead of axios
+				const requrl = `${ssoServerJWTURL}?ssoToken=${ssoToken}`;
+				// const request = await fetch(requrl, { headers: headers });
+				// const response = await request.json();
+
+				const response = await axios.get(requrl, { headers: headers });
 				const { token } = response.data;
 				const decoded = await verifyJwtToken(token);
 				debug(`received the token"`);
+
+				// ! Create a session for this user
 				req.session.user = decoded;
 			} catch (err) {
 				debug("ERRRRRRROR D:");
