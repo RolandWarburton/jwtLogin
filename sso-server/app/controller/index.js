@@ -64,7 +64,7 @@ const appTokenDB = {
 };
 
 const alloweOrigin = {
-	"http://devel:3020": true,
+	"http://devel:3000": true,
 	"https://build.rolandw.dev": true,
 	"https://watch.rolandw.dev": true,
 	"https://test.rolandw.dev": true,
@@ -74,6 +74,7 @@ const deHyphenatedUUID = () => uuidv4().replace(/-/gi, "");
 const encodedId = () => hashids.encodeHex(deHyphenatedUUID());
 
 const originAppName = {
+	"http://devel:3000": "development",
 	"https://build.rolandw.dev": "blogBuilder",
 	"https://watch.rolandw.dev": "blogWatcher",
 	"https://test.rolandw.dev": "testApp",
