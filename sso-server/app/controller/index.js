@@ -65,6 +65,7 @@ const appTokenDB = {
 
 const alloweOrigin = {
 	"http://devel:3000": true,
+	"http://devel:3001": true,
 	"https://build.rolandw.dev": true,
 	"https://watch.rolandw.dev": true,
 	"https://test.rolandw.dev": true,
@@ -75,6 +76,7 @@ const encodedId = () => hashids.encodeHex(deHyphenatedUUID());
 
 const originAppName = {
 	"http://devel:3000": "development",
+	"http://devel:3001": "development2",
 	"https://build.rolandw.dev": "blogBuilder",
 	"https://watch.rolandw.dev": "blogWatcher",
 	"https://test.rolandw.dev": "testApp",
@@ -133,6 +135,7 @@ const storeApplicationInCache = async (origin, id, intrmToken, email) => {
 };
 
 const generatePayload = async (ssoToken) => {
+	debug(`generating a payload based on the ssoToken ${ssoToken}`);
 	// get all the bits we need
 	const tokenCache = await getTokenCache(ssoToken);
 	const session = await getSession(tokenCache.applicationID);
@@ -160,6 +163,7 @@ const generatePayload = async (ssoToken) => {
 			globalSessionID: globalSessionToken,
 		},
 	};
+	debug(payload);
 	return payload;
 };
 
@@ -180,13 +184,16 @@ const verifySsoToken = async (req, res, next) => {
 		debug5("old or missing token. returning 400");
 		return res.status(400).json({ message: "badRequest" });
 	}
+	debug("sso token is valid");
 
 	// fetch the token
 	// const cachedToken = await getTokenCache(ssoToken);
 	// fetch the session and then use it to get the client
+	debug("finding the session based on the cached token");
 	const session = await getSession(cachedToken.applicationID);
 	// fetch the client using the appToken received from the request,
 	// client will return if it authenticates with the correct bearer ID / client secret
+	debug("finding the client based on the app token");
 	const client = await getClient(appToken);
 
 	// get the name of the application to cross ref it against the session (the client the session is referencing)
@@ -200,9 +207,11 @@ const verifySsoToken = async (req, res, next) => {
 	}
 
 	// generate a payload
+	debug("creating the payload");
 	const payload = await generatePayload(ssoToken);
 
 	// encode the payload in a JWT to send back to the client
+	debug("creating a token...");
 	const token = await genJwtToken(payload);
 
 	// ? The purpose of the tokenCache is to track the communication between the client and auth server
@@ -214,6 +223,7 @@ const verifySsoToken = async (req, res, next) => {
 	// 	if (err) debug(err);
 	// 	else debug(`deleted tokenCache tokenID:${ssoToken}`);
 	// });
+	debug(`returning ${token} to the client`);
 	return res.status(200).json({ token });
 };
 
