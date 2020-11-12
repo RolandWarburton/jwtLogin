@@ -3,6 +3,7 @@ const morgan = require("morgan");
 const app = express();
 const engine = require("ejs-mate");
 const session = require("express-session");
+const cors = require("cors");
 const router = require("./router");
 
 app.use(
@@ -18,6 +19,10 @@ app.use((req, res, next) => {
 });
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+const corsOptions = { origin: "*" };
+app.use(cors(corsOptions));
+app.options("*", cors());
 
 app.use(morgan("dev"));
 app.engine("ejs", engine);
