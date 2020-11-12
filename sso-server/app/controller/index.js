@@ -66,9 +66,12 @@ const appTokenDB = {
 const alloweOrigin = {
 	"http://devel:3000": true,
 	"http://devel:3001": true,
+	"http://0x4.host:3000": true,
+	"http://0x4.host:3001": true,
 	"https://build.rolandw.dev": true,
 	"https://watch.rolandw.dev": true,
 	"https://test.rolandw.dev": true,
+	"http://136.186.230.111:3000": true
 };
 
 const deHyphenatedUUID = () => uuidv4().replace(/-/gi, "");
