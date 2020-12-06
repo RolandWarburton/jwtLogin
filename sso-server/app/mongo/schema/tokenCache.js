@@ -2,7 +2,8 @@
 // application	The name of the application (testApp)
 
 module.exports = {
-	tokenID: String,
-	applicationID: String,
-	applicationName: String,
+	_id: String,
+	client: String,
+	user: String,
+	token: String,
 };
