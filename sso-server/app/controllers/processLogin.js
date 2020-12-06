@@ -20,26 +20,7 @@ const mockFindUser = async (email, password) => {
 
 	const user = await query(User, filter);
 	return user;
-	// const userDatabase = [
-	// 	{
-	// 		_id: "abc123",
-	// 		email: "a@a",
-	// 		password: "a",
-	// 	},
-	// ];
-
-	// // find the user
-	// const user = userDatabase.find((user) => user.email == email);
-
-	// // return the user
-	// return user;
 };
-
-// const mockCreateSession = () => {
-// 	return {
-// 		_id: "sessionid",
-// 	};
-// };
 
 // return a imterim token to give back to the client to authorize it
 // its the clients job to decode it and send it back
@@ -50,40 +31,7 @@ const mockCreateClientAuthToken = (client, user) => {
 		// token: uuidv4(),
 		_id: "8868215a-c935-4e61-aa23-61f51821cc00",
 	}).save();
-	// .then((doc) => {
-	// 	return doc;
-	// });
-
-	// await token.save({}, (err, doc) => {
-	// 	if (err) {
-	// 		debug(err);
-	// 		return undefined;
-	// 	}
-	// 	return doc;
-	// });
-
-	// return token;
-
-	// return token;
-
-	debug4(`cached token ${tokenCache.tokenID}`);
-	// generate this in the database and return the _id
-	// const _id = uuidv4();
-	const _id = "8868215a-c935-4e61-aa23-61f51821cc00";
-	const payload = {
-		_id: _id,
-		client: client._id,
-		user: user._id,
-	};
-	return payload;
 };
-
-// const mockGetSession = () => {
-// 	return {
-// 		token:
-// 			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJhYmMxMjMiLCJpYXQiOjE2MDcxNzYwMDEsImV4cCI6MTYwNzE3OTYwMSwiaXNzIjoic2ltcGxlLXNzbyJ9.04YjGstXKsNgyhy757kkYjSrLNkUSwYzd_5POkvrDWE",
-// 	};
-// };
 
 const mockGetClient = async (serviceURL) => {
 	const serviceURLOrigin = new URL(serviceURL).origin;
@@ -94,26 +42,16 @@ const mockGetClient = async (serviceURL) => {
 
 	const client = await query(Client, filter);
 	return client;
-	// debug(client);
-	// const result = {
-	// 	_id: "5f4e0ee4607aa5235a33154b",
-	// 	secret: "l1Q7zkOL59cRqWBkQ12ZiGVW2DBL",
-	// };
-	// return result;
 };
 
 module.exports = async (req, res, next) => {
 	debug("processing login");
-	// debug(req.query);
-	// debug(req.query.serviceURL);
 	const { serviceURL } = await req.query;
+	const { email, password } = req.body;
 
 	// get the service url that the request came from
-	// const serviceURL = req.query.serviceURL;
 	// lookup the client for this service url
 	const client = await mockGetClient(serviceURL);
-
-	const { email, password } = req.body;
 
 	// find user
 	const user = await mockFindUser(email, password);
@@ -123,6 +61,7 @@ module.exports = async (req, res, next) => {
 		// create a temp cached token on the server that mostly just contains an _id, and a reference for the client and user
 		const cacheToken = await mockCreateClientAuthToken(client, user);
 
+		// create a payload to encode into a JWT
 		const payloadBody = {
 			client: cacheToken.client,
 			user: cacheToken.user,
@@ -145,9 +84,5 @@ module.exports = async (req, res, next) => {
 		const redirectUrl = `${req.query.serviceURL}?token=${payload}`;
 		debug(`redirecting back to: ${new URL(redirectUrl).host}`);
 		res.redirect(redirectUrl);
-		// return res.status(200).json({ token: payload });
 	}
-	// for now pass the users details back to them
-	// {email: "warburtonroland@gmail.com", password: "p@ssw0rd"}
-	// return res.status(400).json({ message: "failed to login" });
 };
