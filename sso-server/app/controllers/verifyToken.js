@@ -5,6 +5,8 @@ const debug = require("debug")("app:verifToken");
 const query = require("../queries/queryBase");
 const User = require("../mongo/model/users");
 const TokenCache = require("../mongo/model/tokenCache");
+const Session = require("../mongo/model/sessions");
+const Client = require("../mongo/model/clients");
 
 const validateBearerToken = (token) => {
 	if (token.startsWith("Bearer") && token.split(" ").length == 2) {
@@ -38,12 +40,12 @@ const getClientAuthToken = async (_id) => {
 	return token;
 };
 
-const getClient = (_id) => {
-	return {
-		_id: "5f4e0ee4607aa5235a33154b",
-		name: "testApp",
-		secret: "l1Q7zkOL59cRqWBkQ12ZiGVW2DBL",
+const getClient = async (_id) => {
+	const filter = {
+		_id: _id,
 	};
+	const client = await query(Client, filter, { castID: true });
+	return client;
 };
 
 module.exports = async (req, res) => {
@@ -58,7 +60,7 @@ module.exports = async (req, res) => {
 
 	if (bearer) {
 		// get the client based on the authToken
-		const client = getClient(authToken.client);
+		const client = await getClient(authToken.client);
 
 		// if the "bearer token" matches the "cached auth token" then the client is verified
 		debug(`if ${bearer} == ${authToken._id}`);
@@ -67,9 +69,19 @@ module.exports = async (req, res) => {
 			debug("creating user payload");
 			const user = await mockFindUser(authToken.user);
 
+			// not sure what to do with this
+			// create a session
+			// const session = await new Session({
+			// 	user: user._id,
+			// 	client: client._id,
+			// }).save();
+
+			// when adding new app policy to the user, remember to add the client ID to the {User.appPolicy} schema as well
+			const appPolicy = user.appPolicy[client._id];
+
 			// create a session payload and sign it with the clients secret
 			const payload = await genJwtToken(
-				{ _id: user._id, email: user.email },
+				{ _id: user._id, policy: appPolicy },
 				client.secret
 			);
 

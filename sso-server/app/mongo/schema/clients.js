@@ -3,5 +3,6 @@
 
 module.exports = {
 	name: String,
+	origin: String,
 	secret: String,
 };

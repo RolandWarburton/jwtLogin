@@ -10,7 +10,7 @@ module.exports = {
 	uid: String,
 	email: String,
 	appPolicy: {
-		testApp: { role: String, shareEmail: Boolean },
+		"5f4e0ee4607aa5235a33154b": { role: String, shareEmail: Boolean },
 	},
 };
 
