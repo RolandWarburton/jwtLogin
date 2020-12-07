@@ -28,8 +28,7 @@ const mockCreateClientAuthToken = (client, user) => {
 	return new TokenCache({
 		client: client._id,
 		user: user._id,
-		// token: uuidv4(),
-		_id: "8868215a-c935-4e61-aa23-61f51821cc00",
+		_id: uuidv4(),
 	}).save();
 };
 
