@@ -39,6 +39,7 @@ const mockGetClient = async (serviceURL) => {
 		origin: serviceURLOrigin,
 	};
 
+	debug(filter);
 	const client = await query(Client, filter);
 	return client;
 };
@@ -48,9 +49,13 @@ module.exports = async (req, res, next) => {
 	const { serviceURL } = await req.query;
 	const { email, password } = req.body;
 
+	debug({ serviceURL });
+	debug({ email, password });
+
 	// get the service url that the request came from
 	// lookup the client for this service url
 	const client = await mockGetClient(serviceURL);
+	debug({ client });
 
 	// find user
 	const user = await mockFindUser(email, password);
@@ -68,6 +73,7 @@ module.exports = async (req, res, next) => {
 		};
 
 		// encode the cached tokens _id in a jwt payload encoded it using the clients secret
+		debug(`encoding with ${client.secret}`);
 		const payload = await genJwtToken(payloadBody, client.secret);
 
 		debug(
@@ -80,7 +86,7 @@ module.exports = async (req, res, next) => {
 
 		// now go back to the og source
 		// the client now has to decode it to verify itself
-		const redirectUrl = `${req.query.serviceURL}?token=${payload}`;
+		const redirectUrl = `${req.query.serviceURL}?token=${payload}&serviceURL=${serviceURL}`;
 		debug(`redirecting back to: ${new URL(redirectUrl).host}`);
 		res.redirect(redirectUrl);
 	}
