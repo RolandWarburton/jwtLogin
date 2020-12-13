@@ -1,11 +1,11 @@
-const express = require("express");
-const router = express.Router();
+const loadRoutes = require("../../loadRoutes");
+const routes = loadRoutes("./api/v1/routes/build.rolandw.dev.json");
 
 // ##──── controllers ───────────────────────────────────────────────────────────────────────
 const routeRequest = require("../../../controllers/routeRequest");
 
 // ##──── routes ────────────────────────────────────────────────────────────────────────────
-router.get("*", routeRequest).post("*", routeRequest);
+routes.get("*", routeRequest).post("*", routeRequest);
 
 // ##──── exports ───────────────────────────────────────────────────────────────────────────
-module.exports = router;
+module.exports = routes;
