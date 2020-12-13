@@ -3,11 +3,13 @@ const debug = require("debug")("app:addRoute");
 
 // return true if newRoute is contained in routes
 const checkIfUnique = (routes, newRoute) => {
-	routes.forEach((route) => {
-		if (route.path === newRoute.path && route.method === newRoute.method)
+	for (let i = 0; i < routes.length; i++) {
+		const route = routes[i];
+		if (route.path === newRoute.path && route.method === newRoute.method) {
+			// its not unique
 			return false;
-	});
-
+		}
+	}
 	return true;
 };
 
