@@ -14,7 +14,7 @@ const routes = loadRoutes("./api/v1/routes/watch.rolandw.dev.json");
 
 // ##──── controllers ───────────────────────────────────────────────────────────────────────
 const routeRequest = require("../../../controllers/routeRequest");
-routes.get("*", routeRequest);
+routes.get("*", routeRequest).post("*", routeRequest);
 
 // const addRoute = require("../../addRoute");
 // addRoute("./api/v1/routes/watcherRoutes.json", {
