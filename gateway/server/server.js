@@ -54,8 +54,8 @@ app.locals.test = "test";
 
 // ##──── router ────────────────────────────────────────────────────────────────────────────
 app.use("/api/v1", router);
-app.use("/api/v1", [tagBuilderClient], v1Builder);
-app.use("/api/v1", [tagWatcherClient], v1Watcher);
+app.use("/api/v1/build", [isAuthenticated, tagBuilderClient], v1Builder);
+app.use("/api/v1/watch", [isAuthenticated, tagWatcherClient], v1Watcher);
 
 // ##──── root route ────────────────────────────────────────────────────────────────────────
 app.get("/", (req, res, next) => {
