@@ -86,6 +86,58 @@ TLDR:
 5. GET  http://sso.com/auth/verifyToken -> get user details
 6. GET  http://client.com -> redirect to
 
+## Models
+
+Here are samples for the different models used
+
+### Clients
+
+```json
+{
+	"name": "String",
+	"origin": "String",
+	"secret": "String",
+}
+```
+
+### Sessions
+
+```json
+{
+	"user": "String",
+	"client": "String",
+	"_id": "String",
+	"timestamp": "String",
+}
+```
+
+### TokenCache
+
+```json
+{
+	"_id": "String",
+	"client": "String",
+	"user": "String",
+}
+```
+
+### Users
+
+Where `5f4e0ee4607aa5235a33154b` and `5fd4a0e2df9dda92e032cfe4` are IDs of clients. Each appPolicy object can contain any arbitrary properties that a client may require.
+
+```json
+{
+	"username": "String",
+	"password": "String",
+	"uid": "String",
+	"email": "String",
+	"appPolicy": {
+		"5f4e0ee4607aa5235a33154b": { "role": "String", "shareEmail": "Boolean" },
+		"5fd4a0e2df9dda92e032cfe4": { "role": "String", "shareEmail": "Boolean" },
+	},
+}
+```
+
 TODO:
 
 * Document stuff
