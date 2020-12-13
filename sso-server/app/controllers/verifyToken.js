@@ -25,7 +25,7 @@ const parseBearerToken = (token) => {
 	return token.split(" ").reverse();
 };
 
-const mockFindUser = async (_id) => {
+const findUser = async (_id) => {
 	const filter = { _id: _id };
 	const user = await query(User, filter);
 	return user;
@@ -67,7 +67,7 @@ module.exports = async (req, res) => {
 		if (bearer == authToken._id) {
 			// create the user
 			debug("creating user payload");
-			const user = await mockFindUser(authToken.user);
+			const user = await findUser(authToken.user);
 
 			// // not sure what to do with this
 			// create a session

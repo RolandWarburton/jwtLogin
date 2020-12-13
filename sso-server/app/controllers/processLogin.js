@@ -14,7 +14,7 @@ const TokenCache = require("../mongo/model/tokenCache");
 
 const debug = require("debug")("app:processLogin");
 
-const mockFindUser = async (email, password) => {
+const findUser = async (email, password) => {
 	// debug(`looking for "${email}"`);
 	const filter = { email: email, password: password };
 
@@ -24,7 +24,7 @@ const mockFindUser = async (email, password) => {
 
 // return a imterim token to give back to the client to authorize it
 // its the clients job to decode it and send it back
-const mockCreateClientAuthToken = (client, user) => {
+const createClientAuthToken = (client, user) => {
 	return new TokenCache({
 		client: client._id,
 		user: user._id,
@@ -32,7 +32,7 @@ const mockCreateClientAuthToken = (client, user) => {
 	}).save();
 };
 
-const mockGetClient = async (serviceURL) => {
+const getClient = async (serviceURL) => {
 	const serviceURLOrigin = new URL(serviceURL).origin;
 
 	const filter = {
@@ -54,16 +54,16 @@ module.exports = async (req, res, next) => {
 
 	// get the service url that the request came from
 	// lookup the client for this service url
-	const client = await mockGetClient(serviceURL);
+	const client = await getClient(serviceURL);
 	debug({ client });
 
 	// find user
-	const user = await mockFindUser(email, password);
+	const user = await findUser(email, password);
 
 	// if user was found matching the email and pass
 	if (user) {
 		// create a temp cached token on the server that mostly just contains an _id, and a reference for the client and user
-		const cacheToken = await mockCreateClientAuthToken(client, user);
+		const cacheToken = await createClientAuthToken(client, user);
 
 		// create a payload to encode into a JWT
 		const payloadBody = {
