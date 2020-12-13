@@ -32,19 +32,13 @@ app.set("view engine", "ejs");
 // ##──── root route ────────────────────────────────────────────────────────────────────────
 app.get("/", [isAuthenticated], (req, res, next) => {
 	debug("root");
+
+	// print information about the session
 	// debug(req.session.user);
 	// debug(`This session is: ${req.session.id}`);
+
 	res.render("helloWorld", {
 		test: "hello world",
-	});
-});
-
-app.get("/test", [isAuthenticated], (req, res, next) => {
-	debug("root");
-	// debug(req.session.user);
-	// debug(`This session is: ${req.session.id}`);
-	res.render("helloWorld", {
-		test: "test page",
 	});
 });
 
@@ -55,12 +49,6 @@ app.get("/logout", (req, res, next) => {
 
 // ##──── error handling ────────────────────────────────────────────────────────────────────
 // catch 404 and forward to error handler
-// app.use((req, res, next) => {
-// 	const err = new Error("Resource Not Found");
-// 	err.status = 404;
-// 	next(err);
-// });
-
 // app.use(errorHandler);
 
 module.exports = app;
