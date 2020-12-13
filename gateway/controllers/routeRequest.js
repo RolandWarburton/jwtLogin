@@ -31,16 +31,27 @@ const doFetch = async (url, method, body) => {
 	if (method == "POST") options.body = JSON.stringify(body);
 
 	const response = await fetch(url, options);
-	const json = await response.json();
-	if (response.status != 200) {
-		debug(response);
-		throw new Error(
-			`didnt get 200 back from service that the gateway requested. ${JSON.stringify(
-				json
-			)}`
-		);
+	try {
+		const json = await response.json();
+
+		// if the response wasnt 200 then we should throw an error
+		if (response.status != 200 || json == {}) {
+			debug(response);
+			const message = `didnt get 200 back from service (got ${response.status} instead) and was unable to complete the request.`;
+			throw {
+				message: message,
+				name: "gateway",
+				status: response.status,
+			};
+		}
+		return { data: json, status: response.status };
+	} catch (err) {
+		// this should throw if the json could not be decoded
+		throw {
+			name: "gateway",
+			message: "Failed to decode json data. " + err,
+		};
 	}
-	return json;
 };
 
 // generic api passthrough
@@ -65,7 +76,7 @@ module.exports = async (req, res) => {
 
 	const reqUrl = targetServiceUrl + req.path;
 
-	const result = await doFetch(reqUrl, req.method, req.body)
+	const { status } = await doFetch(reqUrl, req.method, req.body)
 		.then((result) => {
 			debug("returning results to user");
 			res.status(200).json({
@@ -74,14 +85,17 @@ module.exports = async (req, res) => {
 		})
 		.catch((err) => {
 			debug("throwing error");
-			return res.status(400).send(err.message);
+			debug(err);
+			return res.status(400).json(err);
 		});
 
 	// add the route to the routes json collection under the hostname. eg. subdomain.example.com.json
-	addRoute(`./api/v1/routes/${new URL(targetServiceUrl).hostname}.json`, {
-		path: req.path,
-		method: req.method,
-	});
+	if (status == 200) {
+		addRoute(`./api/v1/routes/${new URL(targetServiceUrl).hostname}.json`, {
+			path: req.path,
+			method: req.method,
+		});
+	}
 
 	// return res.status(200).json({
 	// 	success: true,
