@@ -4,8 +4,6 @@ const debug = require("debug")("app:recvToken");
 const fetch = require("node-fetch");
 require("dotenv").config();
 // send token back to server to check that it has a matching session
-// const userawait;
-// req.session.user = { token: token };
 
 const ISSUER = "simple-sso";
 const verifyJwtToken = (token, clientSecret) => {
@@ -45,17 +43,12 @@ module.exports = async (req, res, next) => {
 		const payload = await (
 			await fetch(process.env.TOKEN_VERIF_URL, options)
 		).json();
-		// debug(payload);
-		// debug(payload.user);
+
 		const user = await verifyJwtToken(payload.token, clientSecret);
 		debug(user);
 
 		debug("setting the user in the browser session");
 		req.session.user = user;
-
-		// const decodedToken = decode(token)
-		// fetch(devel:3000/auth/verifyToken, {post})
-		// req.session.user = response
 
 		// then redirect to the intended location
 		debug("reduirecting back to the client");
