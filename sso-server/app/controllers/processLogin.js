@@ -61,7 +61,7 @@ module.exports = async (req, res, next) => {
 	const user = await findUser(email, password);
 
 	// if user was found matching the email and pass
-	if (user) {
+	if (user && client) {
 		// create a temp cached token on the server that mostly just contains an _id, and a reference for the client and user
 		const cacheToken = await createClientAuthToken(client, user);
 
