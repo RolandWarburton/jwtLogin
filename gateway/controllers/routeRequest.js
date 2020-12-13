@@ -76,26 +76,27 @@ module.exports = async (req, res) => {
 
 	const reqUrl = targetServiceUrl + req.path;
 
-	const { status } = await doFetch(reqUrl, req.method, req.body)
+	await doFetch(reqUrl, req.method, req.body)
 		.then((result) => {
 			debug("returning results to user");
-			res.status(200).json({
+			res.status(result.status).json({
 				...result,
 			});
+
+			// add the route to the routes json collection under the hostname. eg. subdomain.example.com.json
+			addRoute(
+				`./api/v1/routes/${new URL(targetServiceUrl).hostname}.json`,
+				{
+					path: req.path,
+					method: req.method,
+				}
+			);
 		})
 		.catch((err) => {
 			debug("throwing error");
 			debug(err);
 			return res.status(400).json(err);
 		});
-
-	// add the route to the routes json collection under the hostname. eg. subdomain.example.com.json
-	if (status == 200) {
-		addRoute(`./api/v1/routes/${new URL(targetServiceUrl).hostname}.json`, {
-			path: req.path,
-			method: req.method,
-		});
-	}
 
 	// return res.status(200).json({
 	// 	success: true,
