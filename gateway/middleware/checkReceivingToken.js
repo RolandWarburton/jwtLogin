@@ -42,7 +42,9 @@ module.exports = async (req, res, next) => {
 		};
 
 		debug("retrieving end user session key");
-		const payload = await (await fetch(TOKEN_VERIF_URL, options)).json();
+		const payload = await (
+			await fetch(process.env.TOKEN_VERIF_URL, options)
+		).json();
 		// debug(payload);
 		// debug(payload.user);
 		const user = await verifyJwtToken(payload.token, clientSecret);
