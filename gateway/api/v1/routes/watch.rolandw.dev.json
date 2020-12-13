@@ -26,5 +26,9 @@
     {
         "path": "/pages",
         "method": "GET"
+    },
+    {
+        "path": "/upload",
+        "method": "POST"
     }
 ]
