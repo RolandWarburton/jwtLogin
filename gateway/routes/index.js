@@ -13,7 +13,11 @@ const routeRequest = require("../controllers/routeRequest");
 // ##──── routes ────────────────────────────────────────────────────────────────────────────
 // register two test routes
 router.get("/test", routeRequest);
-router.get("/", routeRequest);
+router.get("/", (req, res) => {
+	return res.status(200).render("index", {
+		message: `you are on the gateway router ${req.originalUrl}`,
+	});
+});
 
 // ##──── exports ───────────────────────────────────────────────────────────────────────────
 module.exports = router;

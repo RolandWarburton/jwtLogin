@@ -1,0 +1,30 @@
+[
+    {
+        "path": "/upload",
+        "method": "post"
+    },
+    {
+        "path": "/pages/delete",
+        "method": "post"
+    },
+    {
+        "path": "/preview",
+        "method": "post"
+    },
+    {
+        "path": "/update/:id",
+        "method": "post"
+    },
+    {
+        "path": "/update/history/add",
+        "method": "post"
+    },
+    {
+        "path": "/hooks/github",
+        "method": "post"
+    },
+    {
+        "path": "/pages",
+        "method": "GET"
+    }
+]

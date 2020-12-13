@@ -22,6 +22,8 @@ const buildHelpMiddleware = (req, res, next) => {
 };
 
 module.exports = (req, res, next) => {
+	if (!req.path.match(/\/api\/v\d/)) return next();
+
 	// dig through the help object to get the appropriate help text
 	const apiVersion = getAPIVersion(req.path);
 	const routePath = req.originalUrl.replace(`/api/${apiVersion}`, "");

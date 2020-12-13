@@ -9,7 +9,21 @@ const fourofour = require("./404");
 const tagBuilderClient = require("../middleware/tagBuilderClient");
 const tagWatcherClient = require("../middleware/tagWatcherClient");
 const buildController = require("../controllers/buildController");
+const checkReceiveToken = require("../middleware/checkReceivingToken");
+const isAuthenticated = require("../middleware/isAuthenticated");
+const session = require("express-session");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
+
+// ##──── express session ───────────────────────────────────────────────────────────────────
+const expressSession = session({
+	secret: "keyboard cat",
+	resave: false,
+	saveUninitialized: true,
+	cookie: {
+		maxAge: 100000,
+	},
+});
 
 // ##──── route imports ─────────────────────────────────────────────────────────────────────
 const router = require("../routes");
@@ -22,8 +36,11 @@ app.use(cors(corsOptions));
 app.options("*", cors());
 
 // ##──── middleware ────────────────────────────────────────────────────────────────────────
+app.use(expressSession);
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(checkReceiveToken);
 
 // middleware to present the user with help text for different routes
 app.use(buildHelpMiddleware);
@@ -37,15 +54,8 @@ app.locals.test = "test";
 
 // ##──── router ────────────────────────────────────────────────────────────────────────────
 app.use("/api/v1", router);
-app.use("/api/v1", tagBuilderClient, v1Builder);
-app.use("/api/v1", tagWatcherClient, v1Watcher);
-
-// when we need to build a special case route that has multiple params or something we can build it
-const urlAppender = (req, res) => {
-	return "/pageName/home";
-};
-const pagesRouteC = buildController("/pages", urlAppender);
-app.use("/api/v1", tagWatcherClient, pagesRouteC.controller);
+app.use("/api/v1", [tagBuilderClient], v1Builder);
+app.use("/api/v1", [tagWatcherClient], v1Watcher);
 
 // ##──── root route ────────────────────────────────────────────────────────────────────────
 app.get("/", (req, res, next) => {
@@ -53,6 +63,11 @@ app.get("/", (req, res, next) => {
 	return res.status(200).render("index", {
 		message: `you are on the gateway router ${req.originalUrl}`,
 	});
+});
+
+app.get("/logout", (req, res, next) => {
+	req.session.destroy();
+	res.status(200).send("logged out");
 });
 
 // ##──── error handling ────────────────────────────────────────────────────────────────────

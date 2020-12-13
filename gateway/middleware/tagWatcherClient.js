@@ -1,5 +1,5 @@
 const tagWatcherClient = (req, res, next) => {
-	res.locals.targetService = "https://watch.rolandw.dev/";
+	res.locals.targetService = "https://watch.rolandw.dev";
 	next();
 };
 
