@@ -5,5 +5,4 @@ module.exports = {
 	_id: String,
 	client: String,
 	user: String,
-	token: String,
 };
