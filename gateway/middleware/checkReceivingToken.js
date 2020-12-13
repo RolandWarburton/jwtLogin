@@ -47,7 +47,7 @@ module.exports = async (req, res, next) => {
 		const payload = await (await fetch(tokenVerifUrl, options)).json();
 		// debug(payload);
 		// debug(payload.user);
-		const user = await verifyJwtToken(payload.user, clientSecret);
+		const user = await verifyJwtToken(payload.token, clientSecret);
 		debug(user);
 
 		debug("setting the user in the browser session");

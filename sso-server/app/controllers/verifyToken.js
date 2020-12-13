@@ -94,7 +94,7 @@ module.exports = async (req, res) => {
 				debug(`deleted cached token ${doc._id}`)
 			);
 			debug(`returning user id details in payload`);
-			return res.status(200).json({ user: payload });
+			return res.status(200).json({ token: payload });
 		}
 	}
 };
