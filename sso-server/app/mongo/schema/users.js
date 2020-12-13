@@ -10,7 +10,12 @@ module.exports = {
 	uid: String,
 	email: String,
 	appPolicy: {
+		// testApp
 		"5f4e0ee4607aa5235a33154b": { role: String, shareEmail: Boolean },
+		// resourceServer
+		"5fce07c84fa74c1c75a75c69": { role: String, shareEmail: Boolean },
+		// gateway
+		"5fd4a0e2df9dda92e032cfe4": { role: String, shareEmail: Boolean },
 	},
 };
 

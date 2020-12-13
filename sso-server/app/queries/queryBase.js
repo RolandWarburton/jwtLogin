@@ -15,7 +15,7 @@ const query = async (Schema, filter, options = { castID: true }) => {
 
 	return Schema.findOne(filter, (err, doc) => {
 		if (err) {
-			debug(`An error occurred when looking for a session`);
+			debug(`An error occurred when looking for the document`);
 			return undefined;
 		}
 

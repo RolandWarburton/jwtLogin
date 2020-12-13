@@ -1,6 +1,7 @@
 const { genJwtToken } = require("../helpers/jwt_helper");
 const signPyaload = require("../helpers/signPyaload");
 const debug = require("debug")("app:verifToken");
+const { v4: uuidv4 } = require("uuid");
 
 const query = require("../queries/queryBase");
 const User = require("../mongo/model/users");
@@ -35,7 +36,6 @@ const getClientAuthToken = async (_id) => {
 	const filter = {
 		_id: _id,
 	};
-	debug(filter);
 	const token = await query(TokenCache, filter, { castID: false });
 	return token;
 };
@@ -69,19 +69,23 @@ module.exports = async (req, res) => {
 			debug("creating user payload");
 			const user = await mockFindUser(authToken.user);
 
-			// not sure what to do with this
+			// // not sure what to do with this
 			// create a session
-			// const session = await new Session({
-			// 	user: user._id,
-			// 	client: client._id,
-			// }).save();
+			// the purpose of storing the session locally is just for logging purposes right now
+			const session = await new Session({
+				user: user._id,
+				client: client._id,
+				_id: uuidv4(),
+				timestamp: new Date(),
+			}).save();
 
 			// when adding new app policy to the user, remember to add the client ID to the {User.appPolicy} schema as well
 			const appPolicy = user.appPolicy[client._id];
+			debug(`appPolicy is: ${JSON.stringify(appPolicy)}`);
 
 			// create a session payload and sign it with the clients secret
 			const payload = await genJwtToken(
-				{ _id: user._id, policy: appPolicy },
+				{ _id: user._id, policy: appPolicy, sessionID: session._id },
 				client.secret
 			);
 
@@ -89,6 +93,7 @@ module.exports = async (req, res) => {
 			TokenCache.findOneAndDelete({ _id: authToken._id }).then((doc) =>
 				debug(`deleted cached token ${doc._id}`)
 			);
+			debug(`returning user id details in payload`);
 			return res.status(200).json({ user: payload });
 		}
 	}

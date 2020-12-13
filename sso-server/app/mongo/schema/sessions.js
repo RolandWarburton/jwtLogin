@@ -3,4 +3,7 @@
 
 module.exports = {
 	user: String,
+	client: String,
+	_id: String,
+	timestamp: String,
 };

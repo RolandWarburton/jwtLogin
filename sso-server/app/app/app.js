@@ -2,7 +2,6 @@ const express = require("express");
 const errorHandler = require("./errorHandler");
 const app = express();
 const engine = require("ejs-mate");
-const session = require("express-session");
 const debug = require("debug")("app");
 const path = require("path");
 const fourofour = require("../routes/404");
