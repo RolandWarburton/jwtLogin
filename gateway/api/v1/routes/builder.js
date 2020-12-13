@@ -5,7 +5,7 @@ const router = express.Router();
 const routeRequest = require("../../../controllers/routeRequest");
 
 // ##──── routes ────────────────────────────────────────────────────────────────────────────
-router.get("/builder", routeRequest);
+router.get("*", routeRequest).post("*", routeRequest);
 
 // ##──── exports ───────────────────────────────────────────────────────────────────────────
 module.exports = router;
