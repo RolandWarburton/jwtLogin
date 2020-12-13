@@ -37,6 +37,6 @@ app.get("/", (req, res, next) => {
 // catch 404 and forward to error handler
 // app.get(fourofour);
 // print errors in the browser
-app.use(errorHandler);
+// app.use(errorHandler);
 
 module.exports = app;

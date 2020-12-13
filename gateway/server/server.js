@@ -8,7 +8,6 @@ const buildHelpMiddleware = require("../middleware/buildHelpMiddleware");
 const fourofour = require("./404");
 const tagBuilderClient = require("../middleware/tagBuilderClient");
 const tagWatcherClient = require("../middleware/tagWatcherClient");
-const buildController = require("../controllers/buildController");
 const checkReceiveToken = require("../middleware/checkReceivingToken");
 const isAuthenticated = require("../middleware/isAuthenticated");
 const session = require("express-session");

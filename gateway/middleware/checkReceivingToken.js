@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const url = require("url");
 const debug = require("debug")("app:recvToken");
 const fetch = require("node-fetch");
+require("dotenv").config();
 // send token back to server to check that it has a matching session
 // const userawait;
 // req.session.user = { token: token };
@@ -25,15 +26,12 @@ module.exports = async (req, res, next) => {
 		debug(`received the token "${token}"`);
 
 		// decode the token with our client secret
-		const clientSecret = "l1Q7zkOL59cRqWBkQ12ZiGVW2DBL";
+		const clientSecret = process.env.CLIENT_SECRET;
 		const decoded = await verifyJwtToken(token, clientSecret);
 		debug(`verified the received token with _id: "${decoded._id}"`);
 
 		// decode the token and send it back to sso to wait for it to be verified
 		// if its verified you will receive the users details in the response
-
-		const tokenVerifUrl = `http://devel:3000/auth/verifyToken`;
-
 		const headers = {
 			Authorization: `Bearer ${decoded._id}`,
 		};
@@ -44,7 +42,7 @@ module.exports = async (req, res, next) => {
 		};
 
 		debug("retrieving end user session key");
-		const payload = await (await fetch(tokenVerifUrl, options)).json();
+		const payload = await (await fetch(TOKEN_VERIF_URL, options)).json();
 		// debug(payload);
 		// debug(payload.user);
 		const user = await verifyJwtToken(payload.token, clientSecret);
