@@ -22,9 +22,6 @@ module.exports = async (req, res, next) => {
 		// extract the token that we need to decode with the clients secret
 		const { token } = req.query;
 
-		// extract the path that we will go to after this
-		const redirectURL = url.parse(req.url).pathname;
-
 		debug(`received the token "${token}"`);
 
 		// decode the token with our client secret
@@ -62,6 +59,7 @@ module.exports = async (req, res, next) => {
 
 		// then redirect to the intended location
 		debug("reduirecting back to the client");
+		// extract the path that we will go to after this
 		const redirectUrl = req.query.serviceURL;
 		return res.redirect(redirectUrl);
 	}
