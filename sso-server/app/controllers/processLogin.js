@@ -59,6 +59,16 @@ module.exports = async (req, res, next) => {
 
 	// find user
 	const user = await findUser(email, password);
+	debug(user);
+
+	if (!user || !client) {
+		debug("user was not found");
+		return res.status(401).render("authFail", {
+			title: "not authorized",
+			message: "user was not found",
+			serviceURL: serviceURL,
+		});
+	}
 
 	// if user was found matching the email and pass
 	if (user && client) {
