@@ -1,6 +1,5 @@
 const fs = require("fs");
 const debug = require("debug")("app:addRoute");
-const { uniq } = require("underscore");
 
 // return true if newRoute is contained in routes
 const checkIfUnique = (routes, newRoute) => {
@@ -18,7 +17,6 @@ module.exports = (filepath, newRoute) => {
 	if (checkIfUnique(routes, newRoute)) routes.push(newRoute);
 
 	const dataString = JSON.stringify(routes, null, 4);
-	debug(routes);
 	fs.writeFileSync(filepath, dataString);
 	return routes;
 };

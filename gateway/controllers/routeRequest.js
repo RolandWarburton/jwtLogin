@@ -17,7 +17,6 @@ const constructParamUrlString = (paramArray, params) => {
 		const p = paramArray[i];
 		paramString += `${params[paramArray[i]]}/`;
 	}
-	debug(paramString);
 	return paramString;
 };
 
@@ -66,8 +65,6 @@ module.exports = async (req, res) => {
 
 	const reqUrl = targetServiceUrl + req.path;
 
-	debug(req.body);
-
 	const result = await doFetch(reqUrl, req.method, req.body)
 		.then((result) => {
 			debug("returning results to user");
@@ -80,6 +77,7 @@ module.exports = async (req, res) => {
 			return res.status(400).send(err.message);
 		});
 
+	// add the route to the routes json collection under the hostname. eg. subdomain.example.com.json
 	addRoute(`./api/v1/routes/${new URL(targetServiceUrl).hostname}.json`, {
 		path: req.path,
 		method: req.method,
