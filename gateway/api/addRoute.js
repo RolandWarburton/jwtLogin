@@ -3,13 +3,12 @@ const debug = require("debug")("app:addRoute");
 
 // return true if newRoute is contained in routes
 const checkIfUnique = (routes, newRoute) => {
-	let isUnique = true;
 	routes.forEach((route) => {
 		if (route.path === newRoute.path && route.method === newRoute.method)
-			isUnique = false;
+			return false;
 	});
 
-	return isUnique;
+	return true;
 };
 
 module.exports = (filepath, newRoute) => {
