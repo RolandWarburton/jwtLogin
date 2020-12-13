@@ -13,15 +13,18 @@ const checkReceiveToken = require("../middleware/checkReceivingToken");
 const isAuthenticated = require("../middleware/isAuthenticated");
 const session = require("express-session");
 const cors = require("cors");
+const { v4: uuidv4 } = require("uuid");
 const cookieParser = require("cookie-parser");
 
 // ##──── express session ───────────────────────────────────────────────────────────────────
+const sessionSecret = uuidv4();
 const expressSession = session({
-	secret: "keyboard cat",
+	secret: sessionSecret,
 	resave: false,
 	saveUninitialized: true,
 	cookie: {
-		maxAge: 100000,
+		// 1 hour
+		maxAge: 3600000,
 	},
 });
 
