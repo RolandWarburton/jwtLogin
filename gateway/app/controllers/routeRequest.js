@@ -20,6 +20,14 @@ const constructParamUrlString = (paramArray, params) => {
 	return paramString;
 };
 
+const constructQueryUrlString = (queries) => {
+	let queryString = "";
+	for (let i = 0; i < Object.keys(queries).length; i++) {
+		const query = Object.keys(queries)[i];
+		debug(query);
+	}
+};
+
 const doFetch = async (url, method, body) => {
 	const options = {
 		method: method,
@@ -30,6 +38,7 @@ const doFetch = async (url, method, body) => {
 
 	if (method == "POST") options.body = JSON.stringify(body);
 
+	debug(`going to "${url}"`);
 	const response = await fetch(url, options);
 	try {
 		const json = await response.json();
@@ -59,6 +68,8 @@ module.exports = async (req, res) => {
 	debug("================ routing a request ================");
 
 	debug("request information:");
+	debug(`query: ${JSON.stringify(req.query)}`);
+	debug(`originalUrl: ${req.originalUrl}`);
 	debug(`params: ${JSON.stringify(req.params)}`);
 	debug(`path: ${req.route.path}`);
 	debug(`baseUrl: ${req.baseUrl}`);
@@ -74,13 +85,19 @@ module.exports = async (req, res) => {
 	// extract there this request is going
 	const targetServiceUrl = res.locals.targetService;
 
-	const reqUrl = targetServiceUrl + req.path;
+	// construct the url from after /api/v(n)/ to the end of the origional URL
+	const reqUrl =
+		targetServiceUrl + req.originalUrl.substring(req.baseUrl.length);
+	debug(reqUrl);
+
+	debug(req.query);
+	// const queryString = constructQueryUrlString(req.queries);
 
 	await doFetch(reqUrl, req.method, req.body)
 		.then((result) => {
 			debug("returning results to user");
 			res.status(result.status).json({
-				...result,
+				...result.data,
 			});
 
 			// add the route to the routes json collection under the hostname. eg. subdomain.example.com.json

@@ -56,16 +56,19 @@ app.locals.test = "test";
 
 // ##──── router ────────────────────────────────────────────────────────────────────────────
 app.use("/api/v1", router);
-app.use("/api/v1/build", [isAuthenticated, tagBuilderClient], v1Builder);
-app.use("/api/v1/watch", [isAuthenticated, tagWatcherClient], v1Watcher);
+app.use("/api/v1/build", [tagBuilderClient], v1Builder);
+app.use("/api/v1/watch", [tagWatcherClient], v1Watcher);
 
 // ##──── root route ────────────────────────────────────────────────────────────────────────
-app.get("/", (req, res, next) => {
-	debug("root");
-	return res.status(200).render("index", {
-		message: `you are on the gateway router ${req.originalUrl}`,
-	});
-});
+// app.get("/", (req, res, next) => {
+// 	debug("root");
+// 	return res.status(200).render("index", {
+// 		message: `you are on the gateway router ${req.originalUrl}`,
+// 	});
+// });
+
+debug(`dirname: ${__dirname}`);
+app.use([], express.static("/usr/src/app/frontend/build"));
 
 app.get("/logout", (req, res, next) => {
 	req.session.destroy();

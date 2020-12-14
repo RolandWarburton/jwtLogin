@@ -2,7 +2,7 @@ version: "3"
 services:
     blog_gateway:
         container_name: blog_gateway
-        image: sso_server
+        image: blog_gateway
         environment:
             - VIRTUAL_HOST=api.blog.rolandw.dev
             - LETSENCRYPT_HOST=api.blog.rolandw.dev
@@ -11,9 +11,9 @@ services:
             - VIRTUAL_NETWORK=proxy-network
         ports:
             - 3000
-        volumes:
+       # volumes:
             # - ./content:/usr/src/app/content
-            - ./app:/usr/src/app
+            # - ./app:/usr/src/app
 networks:
     default:
         external:
