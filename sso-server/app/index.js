@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const ip = require("internal-ip");
 require("dotenv").config();
 
-const url = `mongodb://admin:rhinos@10.10.10.12:27018/sso?authSource=sso`;
+const url = process.env.MONGO_CONNECT_URL;
 console.log(url);
 
 mongoose.connect(
