@@ -68,11 +68,24 @@ app.use("/api/v1/watch", [tagWatcherClient], v1Watcher);
 // });
 
 debug(`dirname: ${__dirname}`);
-app.use([], express.static("/usr/src/app/frontend/build"));
+// app.get("/", (req, res, next) => {
+// 	return res.json({
+// 		success: true,
+// 		message: "youre on root baby!",
+// 		name: "blog_gateway",
+// 	});
+// });
+
+app.use([isAuthenticated], express.static("/usr/src/app/frontend/build"));
 
 app.get("/logout", (req, res, next) => {
 	req.session.destroy();
 	res.status(200).send("logged out");
+});
+
+app.get("/", (req, res, next) => {
+	req.session.destroy();
+	res.status(200).json({ success: true, name: "blog_gateway" });
 });
 
 // ##──── error handling ────────────────────────────────────────────────────────────────────

@@ -13,7 +13,7 @@ module.exports = async (req, res, next) => {
 		debug("going to the SSO server");
 		// create service url
 		const serviceURL =
-			req.protocol + "://" + req.get("host") + req.originalUrl;
+			"https://" + req.get("host") + req.originalUrl;
 
 		// create redirect url
 		const ssoServerURL = `${process.env.PROMPT_LOGIN_URL}?serviceURL=${serviceURL}`;

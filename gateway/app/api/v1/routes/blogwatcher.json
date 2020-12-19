@@ -1,0 +1,74 @@
+[
+    {
+        "path": "/upload",
+        "method": "post"
+    },
+    {
+        "path": "/pages/delete",
+        "method": "post"
+    },
+    {
+        "path": "/preview",
+        "method": "post"
+    },
+    {
+        "path": "/update/:id",
+        "method": "post"
+    },
+    {
+        "path": "/update/history/add",
+        "method": "post"
+    },
+    {
+        "path": "/hooks/github",
+        "method": "post"
+    },
+    {
+        "path": "/pages",
+        "method": "GET"
+    },
+    {
+        "path": "/upload",
+        "method": "POST"
+    },
+    {
+        "path": "/history/find/5f3a2dd7363fbb0397633334",
+        "method": "GET"
+    },
+    {
+        "path": "/pages/pageName/tmux",
+        "method": "GET"
+    },
+    {
+        "path": "/history/find/5fd5783bf4500b001f1144a7",
+        "method": "GET"
+    },
+    {
+        "path": "/page",
+        "method": "GET"
+    },
+    {
+        "path": "/update/5fd5783bf4500b001f1144a7",
+        "method": "POST"
+    },
+    {
+        "path": "/pages/pageName/test",
+        "method": "GET"
+    },
+    {
+        "path": "/pages/pageName/form",
+        "method": "GET"
+    },
+    {
+        "path": "/delete/5fd72bbae69e21002a6ffc4e",
+        "method": "POST"
+    },
+    {
+        "path": "/delete/5fd72c8ee69e21002a6ffc50",
+        "method": "POST"
+    },
+    {
+        "path": "/pages/pageName/nginx",
+        "method": "GET"
+    }
+]

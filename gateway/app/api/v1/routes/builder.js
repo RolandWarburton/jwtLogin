@@ -1,5 +1,5 @@
 const loadRoutes = require("../../loadRoutes");
-const routes = loadRoutes("./api/v1/routes/build.rolandw.dev.json");
+const routes = loadRoutes("./api/v1/routes/blogbuilder.json");
 
 // ##──── controllers ───────────────────────────────────────────────────────────────────────
 const routeRequest = require("../../../controllers/routeRequest");
